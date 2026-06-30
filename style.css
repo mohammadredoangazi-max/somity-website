@@ -397,6 +397,29 @@ tr:hover td { background: rgba(184,134,46,0.04); }
 .btn-mini.reject { background: #fff; color: var(--color-red); border: 1px solid var(--color-red); }
 .btn-mini.del { background: #fff; color: var(--color-ink-soft); border: 1px solid var(--color-border); }
 .btn-mini.wa { background: #E9F7EF; color: #1E7E45; border: 1px solid #B8E3C6; }
+.btn-mini.reset { background: #FBF3E1; color: var(--color-brass-deep); border: 1px solid #E8D49E; }
+
+.reset-pw-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--color-border);
+  flex-wrap: wrap;
+}
+.reset-pw-label {
+  font-size: 12.5px;
+  color: var(--color-ink-soft);
+}
+.reset-pw-input {
+  padding: 6px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  width: 160px;
+}
 
 .empty-note {
   color: var(--color-ink-soft);
