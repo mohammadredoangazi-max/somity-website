@@ -149,6 +149,7 @@ function renderLoginForm() {
     fields.innerHTML = `
       <div class="field"><label>ফোন নাম্বার</label><input type="text" id="l-phone" placeholder="01XXXXXXXXX"></div>
       <div class="field"><label>পাসওয়ার্ড</label><input type="password" id="l-pass" placeholder="পাসওয়ার্ড"></div>
+      <div class="forgot-pw-link"><a href="#" id="forgot-pw-link">পাসওয়ার্ড ভুলে গেছেন?</a></div>
     `;
   } else {
     fields.innerHTML = `
@@ -158,6 +159,19 @@ function renderLoginForm() {
   }
 
   $("#btn-do-login").onclick = doLogin;
+
+  const forgotLink = $("#forgot-pw-link");
+  if (forgotLink) {
+    forgotLink.onclick = (e) => {
+      e.preventDefault();
+      const phone = (typeof ADMIN_CONTACT_PHONE !== "undefined" && ADMIN_CONTACT_PHONE && ADMIN_CONTACT_PHONE.indexOf("XXXX") === -1)
+        ? ADMIN_CONTACT_PHONE : null;
+      const txt = phone
+        ? `পাসওয়ার্ড ভুলে গেলে এডমিনের সাথে যোগাযোগ করুন: ${toBn(phone)}\nএডমিন আপনার জন্য নতুন পাসওয়ার্ড সেট করে দেবেন।`
+        : `পাসওয়ার্ড ভুলে গেলে আপনার সমিতির এডমিনের সাথে সরাসরি যোগাযোগ করুন।\nএডমিন আপনার জন্য নতুন পাসওয়ার্ড সেট করে দেবেন।`;
+      alert(txt);
+    };
+  }
 }
 
 async function doLogin() {
@@ -499,7 +513,7 @@ function renderAdminBody() {
           </table>
         </div>
         <div class="reset-pw-row">
-          <span class="reset-pw-label">পাসওয়ার্ড ভুলে গেলে নতুন পাসওয়ার্ড সেট করে দিন:</span>
+          <span class="reset-pw-label"><strong>${m.name}</strong>-এর পাসওয়ার্ড ভুলে গেলে এখানে নতুন পাসওয়ার্ড সেট করে দিন:</span>
           <input type="text" id="reset-pw-${m.memberId}" placeholder="নতুন পাসওয়ার্ড" class="reset-pw-input">
           <button class="btn-mini reset" data-resetpw="${m.memberId}">রিসেট করুন</button>
         </div>
