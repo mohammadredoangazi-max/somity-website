@@ -259,7 +259,7 @@ function topbarHTML(roleLabel) {
       </div>
     </div>
     <div class="user-chip">
-      <span class="who">${session.name ? "নমস্কার, " + session.name : "এডমিন"}</span>
+      <span class="who">${session.name ? "স্বাগতম, " + session.name : "এডমিন"}</span>
       <button class="btn-logout" id="btn-logout">লগ আউট</button>
     </div>
   </div>`;
@@ -355,8 +355,43 @@ function renderMemberBody(data) {
       </div>
     </div>
 
+    <div class="card">
+      <div class="card-title">পাসওয়ার্ড পরিবর্তন করুন</div>
+      <div id="pw-msg" class="msg-box"></div>
+      <div class="inline-form" style="grid-template-columns: 1fr 1fr auto;">
+        <div class="field"><label>পুরাতন পাসওয়ার্ড</label><input type="password" id="pw-old" placeholder="বর্তমান পাসওয়ার্ড"></div>
+        <div class="field"><label>নতুন পাসওয়ার্ড</label><input type="password" id="pw-new" placeholder="নতুন পাসওয়ার্ড"></div>
+        <button class="btn-secondary" id="btn-change-pw">পরিবর্তন করুন</button>
+      </div>
+    </div>
+
     <div class="footer-note">সর্বশেষ তথ্য • Google Sheets থেকে সরাসরি লোড হয়েছে</div>
   `;
+
+  const pwBtn = $("#btn-change-pw");
+  if (pwBtn) {
+    pwBtn.onclick = async () => {
+      const oldPw = $("#pw-old").value;
+      const newPw = $("#pw-new").value;
+      const msgBox = $("#pw-msg");
+      if (!oldPw || !newPw) {
+        msgBox.textContent = "দুটো ঘরই পূরণ করুন";
+        msgBox.className = "msg-box show error";
+        return;
+      }
+      pwBtn.disabled = true;
+      pwBtn.textContent = "অপেক্ষা করুন...";
+      const res = await apiCall("changePassword", { memberId: session.memberId, oldPassword: oldPw, newPassword: newPw });
+      msgBox.textContent = res.message;
+      msgBox.className = "msg-box show " + (res.success ? "success" : "error");
+      if (res.success) {
+        $("#pw-old").value = "";
+        $("#pw-new").value = "";
+      }
+      pwBtn.disabled = false;
+      pwBtn.textContent = "পরিবর্তন করুন";
+    };
+  }
 }
 
 // ============================================
@@ -462,6 +497,11 @@ function renderAdminBody() {
             <thead><tr><th>মাস</th><th>পরিমাণ</th><th>তারিখ</th><th>মন্তব্য</th><th></th></tr></thead>
             <tbody>${payRows}</tbody>
           </table>
+        </div>
+        <div class="reset-pw-row">
+          <span class="reset-pw-label">পাসওয়ার্ড ভুলে গেলে নতুন পাসওয়ার্ড সেট করে দিন:</span>
+          <input type="text" id="reset-pw-${m.memberId}" placeholder="নতুন পাসওয়ার্ড" class="reset-pw-input">
+          <button class="btn-mini reset" data-resetpw="${m.memberId}">রিসেট করুন</button>
         </div>
       </div>`;
     }).join("");
@@ -574,6 +614,24 @@ function bindAdminEvents() {
       if (!confirm("এই পেমেন্ট রেকর্ডটি মুছে ফেলতে চান?")) return;
       await apiCall("deletePayment", { paymentId: btn.dataset.delpay });
       await loadAdminData();
+    };
+  });
+  document.querySelectorAll("[data-resetpw]").forEach(btn => {
+    btn.onclick = async (e) => {
+      e.stopPropagation();
+      const id = btn.dataset.resetpw;
+      const input = $(`#reset-pw-${id}`);
+      const newPw = input.value.trim();
+      if (!newPw || newPw.length < 4) {
+        alert("কমপক্ষে ৪ অক্ষরের পাসওয়ার্ড দিন");
+        return;
+      }
+      if (!confirm("এই মেম্বারের পাসওয়ার্ড নতুন করে সেট করতে চান?")) return;
+      btn.disabled = true;
+      const res = await apiCall("resetPassword", { memberId: id, newPassword: newPw });
+      alert(res.message);
+      input.value = "";
+      btn.disabled = false;
     };
   });
   const saveCfgBtn = $("#btn-save-config");
