@@ -405,6 +405,26 @@ tr:hover td { background: rgba(184,134,46,0.04); }
   padding: 24px 0;
 }
 
+.notice-card {
+  background: #FBF3E1;
+  border: 1px solid #E8D49E;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 14px 20px;
+}
+.notice-label {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-brass-deep);
+  white-space: nowrap;
+}
+.notice-text {
+  font-size: 14px;
+  color: var(--color-ink);
+}
+
 .member-row-head {
   display: flex;
   align-items: center;
