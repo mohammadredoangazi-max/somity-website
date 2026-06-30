@@ -34,6 +34,15 @@ function openWhatsAppConfirm(name, phone, month, year, amount) {
   window.open(url, "_blank");
 }
 
+// ---- নোটিশ ব্যানার ----
+function noticeBannerHTML(notice) {
+  if (!notice || !notice.trim()) return "";
+  return `<div class="card notice-card">
+    <div class="notice-label">সমিতির নোটিশ</div>
+    <div class="notice-text">${notice.replace(/</g,"&lt;")}</div>
+  </div>`;
+}
+
 // ---- সেশন স্টেট ----
 let session = JSON.parse(localStorage.getItem("somity_session") || "null");
 
@@ -315,6 +324,7 @@ function renderMemberBody(data) {
   }
 
   $("#m-body").innerHTML = `
+    ${noticeBannerHTML(data.notice)}
     <div class="stat-grid">
       <div class="stat-box">
         <div class="label">সমিতিতে মোট জমা</div>
@@ -458,6 +468,7 @@ function renderAdminBody() {
   }
 
   $("#a-body").innerHTML = `
+    ${noticeBannerHTML(d.notice)}
     <div class="stat-grid">
       <div class="stat-box">
         <div class="label">সমিতিতে মোট জমা</div>
@@ -483,6 +494,18 @@ function renderAdminBody() {
     </div>
 
     <div class="card">
+      <div class="card-title">নোটিশ</div>
+      <p style="font-size:13px;color:var(--color-ink-soft);margin-top:-8px;margin-bottom:14px;">
+        এখানে যা লিখবেন তা সব মেম্বার ও আপনার ড্যাশবোর্ডের উপরে দেখা যাবে। খালি রাখলে কোনো নোটিশ দেখাবে না।
+      </p>
+      <div class="inline-form" style="grid-template-columns: 1fr auto;">
+        <div class="field"><label>নোটিশের লেখা</label><input type="text" id="cfg-notice" value="${(d.notice || "").replace(/"/g,"&quot;")}" placeholder="যেমন: আগামী শুক্রবার মাসিক মিটিং অনুষ্ঠিত হবে"></div>
+        <button class="btn-secondary" id="btn-save-notice">প্রকাশ করুন</button>
+      </div>
+    </div>
+
+    <div class="card">
+
       <div class="card-title">নতুন রেজিস্ট্রেশন আবেদন</div>
       ${pendingRows}
     </div>
@@ -562,6 +585,16 @@ function bindAdminEvents() {
       const fee = $("#cfg-monthly-fee").value;
       await apiCall("setSomityName", { name });
       await apiCall("setMonthlyFee", { fee });
+      await loadAdminData();
+    };
+  }
+  const saveNoticeBtn = $("#btn-save-notice");
+  if (saveNoticeBtn) {
+    saveNoticeBtn.onclick = async () => {
+      saveNoticeBtn.disabled = true;
+      saveNoticeBtn.textContent = "প্রকাশ হচ্ছে...";
+      const notice = $("#cfg-notice").value;
+      await apiCall("setNotice", { notice });
       await loadAdminData();
     };
   }
