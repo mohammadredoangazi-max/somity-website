@@ -68,8 +68,14 @@ function renderAuth() {
   root.innerHTML = `
   <div class="auth-wrap">
     <div class="auth-seal">
-      <div class="ring">স</div>
-      <h1>সমিতি হিসাব</h1>
+      <div class="ring">
+        <svg width="40" height="40" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="13.5" fill="none" stroke="#1F4A3A" stroke-width="2.6"/>
+          <circle cx="32" cy="32" r="13.5" fill="none" stroke="#B8862E" stroke-width="2.6" transform="translate(8,0)"/>
+          <path d="M 32 19.5 A 13.5 13.5 0 0 1 32 46.5 A 13.5 13.5 0 0 1 32 19.5 Z" fill="#8C641E" opacity="0.22"/>
+        </svg>
+      </div>
+      <h1>বন্ধুত্ব সঞ্চয় সমিতি</h1>
       <p>সদস্যদের মাসিক সঞ্চয়ের স্বচ্ছ হিসাব</p>
     </div>
     <div class="card">
@@ -211,9 +217,15 @@ function topbarHTML(roleLabel) {
   return `
   <div class="topbar">
     <div class="brand">
-      <div class="brand-seal">স</div>
+      <div class="brand-seal">
+        <svg width="22" height="22" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="13.5" fill="none" stroke="#1F4A3A" stroke-width="2.8"/>
+          <circle cx="32" cy="32" r="13.5" fill="none" stroke="#B8862E" stroke-width="2.8" transform="translate(8,0)"/>
+          <path d="M 32 19.5 A 13.5 13.5 0 0 1 32 46.5 A 13.5 13.5 0 0 1 32 19.5 Z" fill="#8C641E" opacity="0.22"/>
+        </svg>
+      </div>
       <div>
-        <div class="brand-name">সমিতি হিসাব</div>
+        <div class="brand-name">বন্ধুত্ব সঞ্চয় সমিতি</div>
         <div class="brand-tag">${roleLabel}</div>
       </div>
     </div>
