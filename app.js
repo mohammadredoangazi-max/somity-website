@@ -14,6 +14,26 @@ function fmtMoney(num) {
   return toBn(num.toLocaleString("en-IN"));
 }
 
+// ---- হোয়াটসঅ্যাপ কনফার্মেশন লিংক ----
+function normalizePhoneForWa(phone) {
+  let p = String(phone).replace(/[^0-9]/g, "");
+  if (p.startsWith("0")) p = "88" + p;
+  else if (!p.startsWith("88")) p = "88" + p;
+  return p;
+}
+
+function openWhatsAppConfirm(name, phone, month, year, amount) {
+  if (!phone) {
+    alert("এই মেম্বারের ফোন নাম্বার পাওয়া যায়নি");
+    return;
+  }
+  const waPhone = normalizePhoneForWa(phone);
+  const somityName = (adminData && adminData.somityName) ? adminData.somityName : "সমিতি";
+  const text = `প্রিয় ${name},\nআপনার ${month}, ${year} মাসের ৳${amount} টাকা চাঁদা ${somityName}-তে জমা হিসেবে গ্রহণ করা হয়েছে।\nধন্যবাদ।`;
+  const url = `https://wa.me/${waPhone}?text=${encodeURIComponent(text)}`;
+  window.open(url, "_blank");
+}
+
 // ---- সেশন স্টেট ----
 let session = JSON.parse(localStorage.getItem("somity_session") || "null");
 
@@ -399,7 +419,10 @@ function renderAdminBody() {
             <td>৳ ${fmtMoney(p.amount)}</td>
             <td>${toBn(p.date)}</td>
             <td>${p.note || "-"}</td>
-            <td><button class="btn-mini del" data-delpay="${p.paymentId}">মুছুন</button></td>
+            <td>
+              <button class="btn-mini wa" data-wa="${m.memberId}|${m.name}|${m.phone}|${p.month}|${p.year}|${p.amount}">হোয়াটসঅ্যাপে জানান</button>
+              <button class="btn-mini del" data-delpay="${p.paymentId}">মুছুন</button>
+            </td>
           </tr>`;
         });
       }
@@ -507,8 +530,19 @@ function bindAdminEvents() {
       const note = $(`#pay-note-${id}`).value;
       if (!amount || Number(amount) <= 0) { alert("সঠিক পরিমাণ দিন"); return; }
       btn.disabled = true;
-      await apiCall("addPayment", { memberId: id, month, year, amount, note });
+      const res = await apiCall("addPayment", { memberId: id, month, year, amount, note });
+      const member = adminData.members.find(mm => mm.memberId === id);
       await loadAdminData();
+      if (res.success && member) {
+        openWhatsAppConfirm(member.name, member.phone, month, year, amount);
+      }
+    };
+  });
+  document.querySelectorAll("[data-wa]").forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const [memberId, name, phone, month, year, amount] = btn.dataset.wa.split("|");
+      openWhatsAppConfirm(name, phone, month, year, amount);
     };
   });
   document.querySelectorAll("[data-delpay]").forEach(btn => {
